@@ -8,28 +8,20 @@
 import Foundation
 
 func d1() {
-    runType = .real
-    let ins = inputStrings(sep: "")
-    let iw = inputWords()
-    let ii = inputInts()
-    let ii2 = inputIntWords()
-    let ic = inputCharacters()[0]
-    let ica = inputCharacters()
-//    print(ins)
-//    print(iw)
-//    print(ii)
-//    print(ii2)
-//    print(ic)
-//    print(ica)
+    runType = .all
+    let input = inputIntWords().transpose().map { $0.sorted() }
     
-    var a = 0
+    var a1 = 0
+    var a2 = 0
     
-    f: for l in ins {
-        
+    for l in input.transpose() {
+        a1 += abs(l[1] - l[0])
     }
     
-    printAnswer(a, test: nil, real: nil)
-    copy(a)
+    for l in input[0] {
+        a2 += l*input[1].count(where: { $0 == l })
+    }
     
-    if ins.isEmpty || ii.isEmpty || ii2.isEmpty || iw.isEmpty || ic.isEmpty || ica.isEmpty { return }
+    printAnswer(a1, test: 11, real: 1765812)
+    printAnswer(a2, test: 31, real: 20520794)
 }
