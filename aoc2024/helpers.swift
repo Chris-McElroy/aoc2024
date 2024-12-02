@@ -207,7 +207,7 @@ public extension Collection {
         return false
     }
     
-    func all(where predicate: (Element) -> Bool) -> Bool {
+    func all(satisfy predicate: (Element) -> Bool) -> Bool {
         for e in self where !predicate(e) { return false }
         return true
     }
@@ -407,6 +407,33 @@ public extension Array {
         return self[i]
     }
     
+    func removing(at : Int) -> [Element] {
+        var copy = self
+        copy.remove(at: at)
+        return copy
+    }
+    
+    func appending(_ newElement: Element) -> [Element] {
+        var copy = self
+        copy.append(newElement)
+        return copy
+    }
+    
+    func removeNElements(_ n: Int) -> [[Element]] {
+        if n < 0 { return [] }
+        else if n == 0 { return [self] }
+        else {
+            var allLists: [[Element]] = []
+            for i in 0..<count {
+                allLists.append(self.removing(at: i))
+            }
+            if n > 1 {
+                allLists = allLists.flatMap { $0.removeNElements(n - 1) }
+            }
+            return allLists
+        }
+    }
+    
     func first(_ k: Int) -> Self.SubSequence {
         return self.dropLast(count-k)
     }
@@ -479,6 +506,27 @@ public extension Array {
     mutating func pushOn(_ new: Element) {
         self = self.dropFirst() + [new]
     }
+    
+    func adjacentSets(of n: Int) -> [[Element]] {
+        var allSets: [[Element]] = []
+        if n > count { return [] }
+        for i in 0...(count - n) {
+            allSets.append(self[i, i+n].a)
+        }
+        return allSets
+    }
+    
+    func pairs() -> [[Element]] {
+        adjacentSets(of: 2)
+    }
+    
+    func allPairs(satisfy predicate: (Element, Element) -> Bool) -> Bool {
+        pairs().all(satisfy: { predicate($0[0], $0[1]) })
+    }
+    
+    func anyPairs(satisfy predicate: (Element, Element) -> Bool) -> Bool {
+        pairs().any(where: { predicate($0[0], $0[1]) })
+    }
 }
 
 public extension Array where Element: Equatable {
@@ -492,6 +540,31 @@ public extension Array where Element: Equatable {
             if ends.removeFirst() != ends.removeLast() { return false }
         }
         return true
+    }
+    
+    func removeNElements(_ n: Int) -> [[Element]] {
+        if n < 0 { return [] }
+        else if n == 0 { return [self] }
+        else {
+            var minusOneLists: [[Element]] = []
+            for i in 0..<count {
+                minusOneLists.append(self.removing(at: i))
+            }
+            if n > 1 {
+                var minusNLists: [[Element]] = []
+                for list in minusOneLists.flatMap({ $0.removeNElements(n - 1) }) {
+                    if !minusNLists.contains(list) {
+                        minusNLists.append(list)
+                    }
+                }
+                return minusNLists
+            }
+            return minusOneLists
+        }
+    }
+    
+    func removeUpToNElements(_ n: Int) -> [[Element]] {
+        (0...n).flatMap { removeNElements($0) }
     }
 }
 
@@ -522,6 +595,8 @@ public extension Array where Element: RangeReplaceableCollection, Element.Index 
         
         return t
     }
+    
+    var t: [[Element.Element]] { self.transpose() }
 }
 
 public extension Array where Element: RangeReplaceableCollection, Element.Index == Int, Element.Element: RangeReplaceableCollection, Element.Element.Index == Int {
@@ -565,6 +640,8 @@ public extension Array<String> {
         
         return t
     }
+    
+    var t: [String] { transpose() }
 }
 
 public extension ClosedRange {
@@ -831,8 +908,20 @@ public extension Comparable {
 }
 
 public extension Equatable {
-    func isin(_ one: Self, _ two: Self, _ three: Self) -> Bool {
-        return self == one || self == two || self == three
+    func isin(_ o1: Self, _ o2: Self) -> Bool {
+        return self == o1 || self == o2
+    }
+    
+    func isin(_ o1: Self, _ o2: Self, _ o3: Self) -> Bool {
+        return self == o1 || self == o2 || self == o3
+    }
+    
+    func isin(_ o1: Self, _ o2: Self, _ o3: Self, _ o4: Self) -> Bool {
+        return self == o1 || self == o2 || self == o3 || self == o4
+    }
+    
+    func isin(_ o1: Self, _ o2: Self, _ o3: Self, _ o4: Self, _ o5: Self) -> Bool {
+        return self == o1 || self == o2 || self == o3 || self == o4 || self == o5
     }
 }
 
@@ -858,7 +947,20 @@ public extension Numeric where Self: Comparable {
     }
 }
 
+
+extension SignedNumeric where Self: Comparable {
+    var abs: Self { Swift.abs(self) }
+}
+
 public extension Int {
+    @inlinable init?(_ description: Character) {
+        if description.isNumber {
+            self.init(description.asciiValue! - 48)
+        } else {
+            return nil
+        }
+    }
+    
     mutating func append(_ digit: Self) {
         self = self*10 + digit
     }
@@ -879,6 +981,30 @@ public extension Int {
     func upTo(_ bound: Int) -> Range<Int> {
         self..<bound
     }
+    
+    var isPrime: Bool {
+        // from https://stackoverflow.com/questions/31105664/check-if-a-number-is-prime
+        guard self >= 2     else { return false }
+        guard self != 2     else { return true  }
+        guard self % 2 != 0 else { return false }
+        return !stride(from: 3, through: Int(sqrt(Double(self))), by: 2).contains { self % $0 == 0 }
+    }
+    
+    func times(_ block: () -> Void) {
+        (0..<self).forEach { _ in block() }
+    }
+    
+    func clamped(to range: ClosedRange<Int>) -> Int {
+        if self > range.upperBound {
+            return range.upperBound
+        } else if self < range.lowerBound {
+            return range.lowerBound
+        } else {
+            return self
+        }
+    }
+    
+    var abs: Int { Swift.abs(self) }
 }
 
 infix operator ** : MultiplicationPrecedence
@@ -1475,38 +1601,6 @@ func lcm(_ a: Int, _ b: Int) -> Int {
 // LCM of a vector of numbers:
 func lcm(_ vector: [Int]) -> Int {
     return vector.reduce(1, lcm)
-}
-
-extension Int {
-    var isPrime: Bool {
-        // from https://stackoverflow.com/questions/31105664/check-if-a-number-is-prime
-        guard self >= 2     else { return false }
-        guard self != 2     else { return true  }
-        guard self % 2 != 0 else { return false }
-        return !stride(from: 3, through: Int(sqrt(Double(self))), by: 2).contains { self % $0 == 0 }
-    }
-    
-    @inlinable public init?(_ description: Character) {
-        if description.isNumber {
-            self.init(description.asciiValue! - 48)
-        } else {
-            return nil
-        }
-    }
-    
-    func times(_ block: () -> Void) {
-        (0..<self).forEach { _ in block() }
-    }
-    
-    func clamped(to range: ClosedRange<Int>) -> Int {
-        if self > range.upperBound {
-            return range.upperBound
-        } else if self < range.lowerBound {
-            return range.lowerBound
-        } else {
-            return self
-        }
-    }
 }
 
 enum Operation {

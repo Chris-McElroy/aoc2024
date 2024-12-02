@@ -8,64 +8,22 @@
 import Foundation
 
 func d2() {
-    runType = .real
-    let ins = inputStrings()
-    let iw = inputWords()
-    let ii = inputInts()
-    let ii2 = inputIntWords()
-    let ic = inputCharacters()[0]
-    let ica = inputCharacters()
-//    print(ins)
-//    print(iw)
-//    print(ii)
-//    print(ii2)
-//    print(ic)
-//    print(ica)
+    runType = .all
+    let input = inputIntWords()
+    var a1 = 0
+    var a2 = 0
     
-    var a = 0
-    
-    f: for var l in ii2 {
-        var anyTrue = false
-        let oldL = l
-        for j in 0..<l.count {
-            l = oldL
-            l.remove(at: j)
-            
-            
-            var inc = true
-            var dec = true
-            var dif = true
-            var p = l.first!
-            for i in l.dropFirst() {
-                if i >= p { dec = false }
-                if i <= p { inc = false }
-                if !abs(i-p).isin(1..<4) { dif = false }
-                p = i
-            }
-            if dif && (inc || dec) {
-                anyTrue = true
-            }
-        }
-        l = oldL
-        
-        var inc = true
-        var dec = true
-        var dif = true
-        var p = l.first!
-        for i in l.dropFirst() {
-            if i >= p { dec = false }
-            if i <= p { inc = false }
-            if !abs(i-p).isin(1..<4) { dif = false }
-            p = i
-        }
-        if dif && (inc || dec) {
-            anyTrue = true
-        }
-        if anyTrue { a += 1}
+    for l in input {
+        a1 += safeReport(l).int
+        a2 += l.removeNElements(1).any(where: { safeReport($0) }).int
     }
     
-    printAnswer(a, test: nil, real: nil)
-    copy(a)
+    func safeReport(_ report: [Int]) -> Bool {
+        let dif = report.allPairs(satisfy: { ($0 - $1).abs.isin(1...3) })
+        let ord = report.sorted().isin(report, report.reversed())
+        return dif && ord
+    }
     
-    if ins.isEmpty || ii.isEmpty || ii2.isEmpty || iw.isEmpty || ic.isEmpty || ica.isEmpty { return }
+    printAnswer(a1, test: 2, real: 598)
+    printAnswer(a2, test: 4, real: 634)
 }

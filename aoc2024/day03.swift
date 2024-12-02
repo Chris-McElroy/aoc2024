@@ -24,11 +24,9 @@ func d3() {
 //    print(ica)
     
     var a = 0
-    let inp = ii2.transpose().map { $0.sorted() }
-    print(inp)
     
-    f: for l in inp[0] {
-        a += l*inp[1].count(where: { $0 == l })
+    f: for l in ii2 {
+     
     }
     
     printAnswer(a, test: nil, real: nil)
