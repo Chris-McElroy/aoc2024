@@ -8,9 +8,8 @@
 import Foundation
 
 func d2() {
-    /*
     runType = .real
-    let ins = inputStrings(sep: "")
+    let ins = inputStrings()
     let iw = inputWords()
     let ii = inputInts()
     let ii2 = inputIntWords()
@@ -24,16 +23,49 @@ func d2() {
 //    print(ica)
     
     var a = 0
-    let inp = ii2.transpose().map { $0.sorted() }
-    print(inp)
     
-    f: for l in inp[0] {
-        a += l*inp[1].count(where: { $0 == l })
+    f: for var l in ii2 {
+        var anyTrue = false
+        let oldL = l
+        for j in 0..<l.count {
+            l = oldL
+            l.remove(at: j)
+            
+            
+            var inc = true
+            var dec = true
+            var dif = true
+            var p = l.first!
+            for i in l.dropFirst() {
+                if i >= p { dec = false }
+                if i <= p { inc = false }
+                if !abs(i-p).isin(1..<4) { dif = false }
+                p = i
+            }
+            if dif && (inc || dec) {
+                anyTrue = true
+            }
+        }
+        l = oldL
+        
+        var inc = true
+        var dec = true
+        var dif = true
+        var p = l.first!
+        for i in l.dropFirst() {
+            if i >= p { dec = false }
+            if i <= p { inc = false }
+            if !abs(i-p).isin(1..<4) { dif = false }
+            p = i
+        }
+        if dif && (inc || dec) {
+            anyTrue = true
+        }
+        if anyTrue { a += 1}
     }
     
     printAnswer(a, test: nil, real: nil)
     copy(a)
     
     if ins.isEmpty || ii.isEmpty || ii2.isEmpty || iw.isEmpty || ic.isEmpty || ica.isEmpty { return }
-     */
 }
