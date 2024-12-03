@@ -20,7 +20,7 @@ func d2() {
     
     func safeReport(_ report: [Int]) -> Bool {
         let dif = report.allPairs(satisfy: { ($0 - $1).abs.isin(1...3) })
-        let ord = report.sorted().isin(report, report.reversed())
+        let ord = report.sorted().isin(report, report.r)
         return dif && ord
     }
     

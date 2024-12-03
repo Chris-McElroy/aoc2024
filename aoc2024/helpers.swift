@@ -302,6 +302,8 @@ public extension Collection {
     func toTuple() -> (Element, Element, Element, Element, Element) {
         return (self[0 as! Self.Index], self[1 as! Self.Index], self[2 as! Self.Index], self[3 as! Self.Index], self[4 as! Self.Index])
     }
+    
+    var r: [Element] { reversed() }
 }
 
 public extension Collection where Element == Bool {
