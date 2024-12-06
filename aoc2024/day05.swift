@@ -16,6 +16,8 @@ func d5() {
     
     var a = 0
     
+    // TODO see my texts for tim for what i would like to be able to deal with this
+    // TODO make autoinput that parses automatically if it's a format that's anything like what we've seen before, sets as type Any and then i can cast it here
     f: for u in upd {
         var valid = true
         for r in rules {
