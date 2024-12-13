@@ -1068,9 +1068,10 @@ public extension BinaryInteger {
     var isOdd: Bool { self % 2 == 1 }
 }
 
-public struct C2: Equatable, Hashable, AdditiveArithmetic, Comparable {
+public struct C2: Equatable, Hashable, AdditiveArithmetic, Comparable, CustomStringConvertible {
     var x: Int
     var y: Int
+    public var description: String { "(x: \(x), y: \(y))" }
     
     init(_ x: Int, _ y: Int) {
         self.x = x
@@ -1362,6 +1363,19 @@ public struct C3: Equatable, Hashable, AdditiveArithmetic {
         C3(rhs.x*lhs, rhs.y*lhs, rhs.z*lhs)
     }
 }
+
+func seti() -> Set<Int> { [] }
+func setd() -> Set<Double> { [] }
+func setc() -> Set<Character> { [] }
+func sets() -> Set<String> { [] }
+func setc2() -> Set<C2> { [] }
+func setc3() -> Set<C3> { [] }
+func setia() -> Set<[Int]> { [] }
+func setda() -> Set<[Double]> { [] }
+func setca() -> Set<[Character]> { [] }
+func setsa() -> Set<[String]> { [] }
+func setc2a() -> Set<[C2]> { [] }
+func setc3a() -> Set<[C3]> { [] }
 
 var memoryLimit: Int = 100
 
