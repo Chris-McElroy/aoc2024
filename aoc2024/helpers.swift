@@ -963,6 +963,14 @@ public extension Int {
         }
     }
     
+    @inlinable init(_ source: Double, rounded: FloatingPointRoundingRule) {
+        self = Int(source.rounded(rounded))
+    }
+    
+    @inlinable init(_ source: Float, rounded: FloatingPointRoundingRule) {
+        self = Int(source.rounded(rounded))
+    }
+    
     mutating func append(_ digit: Self) {
         self = self*10 + digit
     }
@@ -1019,6 +1027,28 @@ public extension Numeric {
     
     static func ** (lhs: Self, rhs: Int) -> Self {
         (0..<rhs).reduce(1) { x,y in x*lhs }
+    }
+}
+
+public extension FloatingPoint {
+    func nearInt(within d: Self = 0.0001) -> Bool {
+        distanceToInt() <= d
+    }
+    
+    func distanceToInt() -> Self {
+        (self - self.rounded(.toNearestOrAwayFromZero)).abs
+    }
+}
+
+public extension Double {
+    func nearest() -> Int {
+        Int(self.rounded(.toNearestOrAwayFromZero))
+    }
+}
+
+public extension Float {
+    func nearest() -> Int {
+        Int(self.rounded(.toNearestOrAwayFromZero))
     }
 }
 
