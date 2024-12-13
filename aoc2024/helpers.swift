@@ -1007,6 +1007,8 @@ public extension Int {
     }
     
     var abs: Int { Swift.abs(self) }
+    
+    var d: Double { Double(self) }
 }
 
 infix operator ** : MultiplicationPrecedence

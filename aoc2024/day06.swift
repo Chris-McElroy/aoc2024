@@ -39,7 +39,7 @@ func d6() {
     
     
     var line = 0
-    var oldIns = ins
+    let oldIns = ins
     
     // TODO i should have a wayyyy better way of dealing with all of the memory things for this
     // TODO old code at the bottom should work
