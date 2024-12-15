@@ -1017,6 +1017,10 @@ public extension Int {
     var abs: Int { Swift.abs(self) }
     
     var d: Double { Double(self) }
+    
+    func mod(_ modulo: Int) -> Int {
+        ((self % modulo) + modulo) % modulo
+    }
 }
 
 infix operator ** : MultiplicationPrecedence
@@ -1088,6 +1092,11 @@ public struct C2: Equatable, Hashable, AdditiveArithmetic, Comparable, CustomStr
         case "S": self.init(0, -1)
         case "W": self.init(-1, 0)
         case "E": self.init(1, 0)
+        case "<": self.init(-1, 0)
+        case ">": self.init(1, 0)
+        case "V": self.init(0, 1)
+        case "v": self.init(0, 1)
+        case "^": self.init(0, -1)
         default: self.init(0, 0)
         }
     }
@@ -1165,6 +1174,11 @@ public struct C2: Equatable, Hashable, AdditiveArithmetic, Comparable, CustomStr
     func inBounds(of array: any Collection<String>) -> Bool {
         x.isin(0..<(array.first?.count ?? 1)) && y.isin(0..<array.count)
     }
+    
+//    func wrapInBounds(of array: any Collection<String>) -> C2 {
+//        C2(x )
+//        x.isin(0..<(array.first?.count ?? 1)) && y.isin(0..<array.count)
+//    }
     
     func endOfLine<T>(of array: Array<Array<T>>) -> Bool {
         x == array[y].count - 1
@@ -1364,18 +1378,64 @@ public struct C3: Equatable, Hashable, AdditiveArithmetic {
     }
 }
 
-func seti() -> Set<Int> { [] }
-func setd() -> Set<Double> { [] }
-func setc() -> Set<Character> { [] }
-func sets() -> Set<String> { [] }
-func setc2() -> Set<C2> { [] }
-func setc3() -> Set<C3> { [] }
-func setia() -> Set<[Int]> { [] }
-func setda() -> Set<[Double]> { [] }
-func setca() -> Set<[Character]> { [] }
-func setsa() -> Set<[String]> { [] }
-func setc2a() -> Set<[C2]> { [] }
-func setc3a() -> Set<[C3]> { [] }
+typealias P = C2
+typealias IS = Set<Int>
+typealias DS = Set<Double>
+typealias CS = Set<Character>
+typealias SS = Set<String>
+typealias PS = Set<C2>
+typealias C2S = Set<C2>
+typealias C3S = Set<C3>
+typealias IAS = Set<[Int]>
+typealias DAS = Set<[Double]>
+typealias CAS = Set<[Character]>
+typealias SAS = Set<[String]>
+typealias PAS = Set<[C2]>
+typealias C2AS = Set<[C2]>
+typealias C3AS = Set<[C3]>
+typealias IIDS = Set<[Int: Int]>
+typealias IDDS = Set<[Int: Double]>
+typealias ICDS = Set<[Int: Character]>
+typealias ISDS = Set<[Int: String]>
+typealias IPDS = Set<[Int: C2]>
+typealias IC2DS = Set<[Int: C2]>
+typealias IC3DS = Set<[Int: C3]>
+typealias IIADS = Set<[Int: [Int]]>
+typealias IDADS = Set<[Int: [Double]]>
+typealias ICADS = Set<[Int: [Character]]>
+typealias ISADS = Set<[Int: [String]]>
+typealias IPADS = Set<[Int: [C2]]>
+typealias IC2ADS = Set<[Int: [C2]]>
+typealias IC3ADS = Set<[Int: [C3]]>
+typealias SIDS = Set<[String: Int]>
+typealias SDDS = Set<[String: Double]>
+typealias SCDS = Set<[String: Character]>
+typealias SSDS = Set<[String: String]>
+typealias SPDS = Set<[String: C2]>
+typealias SC2DS = Set<[String: C2]>
+typealias SC3DS = Set<[String: C3]>
+typealias SIADS = Set<[String: [Int]]>
+typealias SDADS = Set<[String: [Double]]>
+typealias SCADS = Set<[String: [Character]]>
+typealias SSADS = Set<[String: [String]]>
+typealias SPADS = Set<[String: [C2]]>
+typealias SC2ADS = Set<[String: [C2]]>
+typealias SC3ADS = Set<[String: [C3]]>
+typealias PIDS = Set<[C2: Int]>
+typealias PDDS = Set<[C2: Double]>
+typealias PCDS = Set<[C2: Character]>
+typealias PSDS = Set<[C2: String]>
+typealias PPDS = Set<[C2: C2]>
+typealias PC2DS = Set<[C2: C2]>
+typealias PC3DS = Set<[C2: C3]>
+typealias PIADS = Set<[C2: [Int]]>
+typealias PDADS = Set<[C2: [Double]]>
+typealias PCADS = Set<[C2: [Character]]>
+typealias PSADS = Set<[C2: [String]]>
+typealias PPADS = Set<[C2: [C2]]>
+typealias PC2ADS = Set<[C2: [C2]]>
+typealias PC3ADS = Set<[C2: [C3]]>
+
 
 var memoryLimit: Int = 100
 

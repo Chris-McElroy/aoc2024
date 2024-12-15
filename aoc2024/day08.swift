@@ -14,8 +14,8 @@ func d8() {
     var a1 = 0
     var a2 = 0
     
-    var an1 = setc2()
-    var an2 = setc2()
+    var an1 = PS()
+    var an2 = PS()
     
     var pd: [Character: [C2]] = [:]
     
