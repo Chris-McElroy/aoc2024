@@ -26,7 +26,7 @@ func d18() {
     var a = 0
     
     f: for p in ins.points() {
-        a += 1
+        a += p.x
     }
     
     printAnswer(a, test: nil, real: nil)
