@@ -397,6 +397,16 @@ public extension Collection where Element: Comparable {
         if count <= top { return self.a }
         return self.sorted().a.first(top).a
     }
+    
+    func eachValueOnce() -> [Element] {
+        var seen: [Element] = []
+        for e in self {
+            if !seen.contains(e) {
+                seen.append(e)
+            }
+        }
+        return seen
+    }
 }
 
 public extension Array {
@@ -579,6 +589,10 @@ public extension Array where Element: RangeReplaceableCollection, Element.Index 
         (0..<self.count).flatMap { y in (0..<self[y].count).map { x in C2(x, y) } }
     }
     
+    func pointsAndValues() -> [(C2, Element.Element)] {
+        return points().map { ($0, self[$0]) }
+    }
+    
     func pointsGrid() -> [[C2]] {
         (0..<self.count).map { y in (0..<self[y].count).map { x in C2(x, y) } }
     }
@@ -598,6 +612,10 @@ public extension Array where Element: RangeReplaceableCollection, Element.Index 
         return t
     }
     
+    func trimBorders() -> Self {
+        self.dropFirst().dropLast().map { $0.dropFirst().dropLast().a as! Element }
+    }
+    
     var t: [[Element.Element]] { self.transpose() }
 }
 
@@ -608,6 +626,10 @@ public extension Array where Element: RangeReplaceableCollection, Element.Index 
     
     func points() -> [C3] {
         (0..<self.count).flatMap { z in (0..<self[z].count).flatMap { y in (0..<self[y].count).map { x in C3(x, y, z) } } }
+    }
+    
+    func pointsAndValues() -> [(C3, Element.Element.Element)] {
+        return points().map { ($0, self[$0]) }
     }
     
     func pointsGrid() -> [[[C3]]] {
@@ -622,6 +644,10 @@ public extension Array<String> {
     
     func points() -> [C2] {
         (0..<self.count).flatMap { y in (0..<self[y].count).map { x in C2(x, y) } }
+    }
+    
+    func pointsAndValues() -> [(C2, Element.Element)] {
+        return points().map { ($0, self[$0]) }
     }
     
     func pointsGrid() -> [[C2]] {
@@ -641,6 +667,10 @@ public extension Array<String> {
         }
         
         return t
+    }
+    
+    func trimBorders() -> Self {
+        self.dropFirst().dropLast().map { String($0.dropFirst().dropLast()) }
     }
     
     var t: [String] { transpose() }
@@ -756,6 +786,7 @@ public extension String {
 }
 
 public extension StringProtocol {
+    // TODO make all subscripts get {} set {} format
     subscript(offset: Int) -> Character {
         self[index(startIndex, offsetBy: offset)]
     }
@@ -1378,6 +1409,10 @@ public struct C3: Equatable, Hashable, AdditiveArithmetic {
     }
 }
 
+typealias I = Int
+typealias D = Double
+typealias C = Character
+typealias S = String
 typealias P = C2
 typealias IS = Set<Int>
 typealias DS = Set<Double>
@@ -1662,6 +1697,63 @@ class LinkedCycle<Element>: CustomStringConvertible {
         return text + "]"
     }
 }
+
+func parseMap(_ input: [S]) -> [C: PS] {
+    var parse: [C: PS] = [:]
+    for (p, c) in input.pointsAndValues() {
+        parse[c, default: []].insert(p)
+    }
+    return parse
+}
+
+/// returns nWays number of non-self-intersecting paths from the start to end points on the given map parse. to get all ways, set nWays to nil
+//func traverse(map parse: [C: PS], from start: P, to end: P, avoiding: [C] = ["#"], nWays: Int? = 1, diagonals: Bool = false, pruneScore: (PS) -> Int = {
+//    $0.count
+//}) -> PAS {
+//    var paths: PAS = [[start]]
+//    var fullPaths: PAS = []
+//    let possPoints: PS = Set(parse.filter { !avoiding.contains($0.key) }.flatMap { $0.value })
+//    let wallPoints: PS = Set(parse.filter { avoiding.contains($0.key) }.flatMap { $0.value })
+//    if diagonals {
+//        while !paths.isEmpty {
+//            if let nWays, fullPaths.count >= nWays { break }
+//            var newPaths: PAS = []
+//            var ends = paths.map({ $0.last! }).eachValueOnce()
+//            for end in ends {
+//                newPaths.insert(paths.filter({ $0.last! == end }).min(by: { $0.pruneScore() < $1.pruneScore })!)
+//            }
+//            return paths
+//            for path in paths {
+//                for next in path.last!.neighbors where !path.contains(next) {
+//                    if next == end {
+//                        fullPaths.insert(path.appending(next))
+//                    } else if possPoints.contains(next) && !wallPoints.contains(next) {
+//                        newPaths.insert(path.appending(next))
+//                    }
+//                }
+//            }
+//            paths = newPaths
+//        }
+//    } else { // bringing the if out to top level because i think that will slightly speed up computation, not tested though
+//        while !paths.isEmpty {
+//            print("step", paths.count)
+//            if let nWays, fullPaths.count >= nWays { break }
+//            var newPaths: PAS = []
+//            for path in paths {
+//                for next in path.last!.adjacents where !path.contains(next) {
+//                    if next == end {
+//                        fullPaths.insert(path.appending(next))
+//                    } else if possPoints.contains(next) && !wallPoints.contains(next) {
+//                        newPaths.insert(path.appending(next))
+//                    }
+//                }
+//            }
+//            paths = newPaths
+//        }
+//    }
+//    
+//    return fullPaths
+//}
 
 func bfs<T>(startingWith start: Set<T>, searchFor solution: ((T, Int, Set<T>) -> Bool) = { _,_,_ in false }, expandUsing search: (T) -> [T], continueWhile shouldContinue: (Int, Set<T>) -> Bool) {
     var steps = 0
