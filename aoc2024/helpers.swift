@@ -1706,54 +1706,71 @@ func parseMap(_ input: [S]) -> [C: PS] {
     return parse
 }
 
+struct scoredPath: Hashable {
+    var p: [P]
+    var s: I
+}
+
+// TODO implement this as A*
 /// returns nWays number of non-self-intersecting paths from the start to end points on the given map parse. to get all ways, set nWays to nil
-//func traverse(map parse: [C: PS], from start: P, to end: P, avoiding: [C] = ["#"], nWays: Int? = 1, diagonals: Bool = false, pruneScore: (PS) -> Int = {
-//    $0.count
-//}) -> PAS {
-//    var paths: PAS = [[start]]
-//    var fullPaths: PAS = []
-//    let possPoints: PS = Set(parse.filter { !avoiding.contains($0.key) }.flatMap { $0.value })
-//    let wallPoints: PS = Set(parse.filter { avoiding.contains($0.key) }.flatMap { $0.value })
-//    if diagonals {
-//        while !paths.isEmpty {
-//            if let nWays, fullPaths.count >= nWays { break }
-//            var newPaths: PAS = []
-//            var ends = paths.map({ $0.last! }).eachValueOnce()
-//            for end in ends {
-//                newPaths.insert(paths.filter({ $0.last! == end }).min(by: { $0.pruneScore() < $1.pruneScore })!)
-//            }
-//            return paths
-//            for path in paths {
-//                for next in path.last!.neighbors where !path.contains(next) {
-//                    if next == end {
-//                        fullPaths.insert(path.appending(next))
-//                    } else if possPoints.contains(next) && !wallPoints.contains(next) {
-//                        newPaths.insert(path.appending(next))
-//                    }
-//                }
-//            }
-//            paths = newPaths
-//        }
-//    } else { // bringing the if out to top level because i think that will slightly speed up computation, not tested though
-//        while !paths.isEmpty {
-//            print("step", paths.count)
-//            if let nWays, fullPaths.count >= nWays { break }
-//            var newPaths: PAS = []
-//            for path in paths {
-//                for next in path.last!.adjacents where !path.contains(next) {
-//                    if next == end {
-//                        fullPaths.insert(path.appending(next))
-//                    } else if possPoints.contains(next) && !wallPoints.contains(next) {
-//                        newPaths.insert(path.appending(next))
-//                    }
-//                }
-//            }
-//            paths = newPaths
-//        }
-//    }
-//    
-//    return fullPaths
-//}
+func traverse(map parse: [C: PS], from start: P, to end: P, avoiding: [C] = ["#"], nWays: Int? = 1, diagonals: Bool = false, updateScore: (scoredPath) -> Int = { $0.p.count }) -> PAS {
+    var paths: Set<scoredPath> = [scoredPath(p: [start], s: 0)]
+    var fullPaths: PAS = []
+    let possPoints: PS = Set(parse.filter { !avoiding.contains($0.key) }.flatMap { $0.value })
+    let wallPoints: PS = Set(parse.filter { avoiding.contains($0.key) }.flatMap { $0.value })
+    var steps = 0
+    if diagonals {
+        while !paths.isEmpty {
+            if let nWays, fullPaths.count >= nWays { break }
+            var newPaths: Set<scoredPath> = []
+            for path in paths {
+                for next in path.p.last!.neighbors where !path.p.contains(next) {
+                    var newPath = path
+                    newPath.p.append(next)
+                    newPath.s = updateScore(path)
+                    if next == end {
+                        fullPaths.insert(newPath.p)
+                    } else if possPoints.contains(next) && !wallPoints.contains(next) {
+                        newPaths.insert(newPath)
+                    }
+                }
+            }
+            paths = []
+            let ends = Set(newPaths.map({ $0.p.last! }))
+            for end in ends {
+                paths.insert(newPaths.filter({ $0.p.last! == end }).min(by: { updateScore($0) < updateScore($1) })!)
+            }
+        }
+    } else { // bringing the if out to top level because i think that will slightly speed up computation, not tested though
+        while !paths.isEmpty {
+            steps += 1
+            print("step", steps, paths.count)
+            if let nWays, fullPaths.count >= nWays { break }
+            var newPaths: Set<scoredPath> = []
+            for path in paths {
+                for next in path.p.last!.adjacents where !path.p.contains(next) {
+                    var newPath = path
+                    newPath.p.append(next)
+                    newPath.s = updateScore(newPath)
+                    if next == end {
+                        fullPaths.insert(newPath.p)
+                    } else if possPoints.contains(next) && !wallPoints.contains(next) {
+                        newPaths.insert(newPath)
+                    }
+                }
+            }
+            paths = []
+            let ends = Set(newPaths.map({ $0.p.last! }))
+            for end in ends {
+                let minScore = newPaths.filter({ $0.p.last! == end }).min(by: { $0.s < $1.s })!.s
+                paths.formUnion(newPaths.filter({ $0.p.last! == end && $0.s <= (minScore + 1000) }))
+            }
+            paths = paths.filter({ $0.s <= 134588 })
+        }
+    }
+    
+    return fullPaths
+}
 
 func bfs<T>(startingWith start: Set<T>, searchFor solution: ((T, Int, Set<T>) -> Bool) = { _,_,_ in false }, expandUsing search: (T) -> [T], continueWhile shouldContinue: (Int, Set<T>) -> Bool) {
     var steps = 0
