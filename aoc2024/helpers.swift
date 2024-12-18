@@ -1762,10 +1762,15 @@ func traverse(map parse: [C: PS], from start: P, to end: P, avoiding: [C] = ["#"
             paths = []
             let ends = Set(newPaths.map({ $0.p.last! }))
             for end in ends {
-                let minScore = newPaths.filter({ $0.p.last! == end }).min(by: { $0.s < $1.s })!.s
-                paths.formUnion(newPaths.filter({ $0.p.last! == end && $0.s <= (minScore + 1000) }))
+                paths.insert(newPaths.filter({ $0.p.last! == end }).min(by: { $0.s < $1.s })!)
+//                paths.formUnion(newPaths.filter({ $0.p.last! == end && $0.s <= (minScore) }))
             }
-            paths = paths.filter({ $0.s <= 134588 })
+//            newPaths = paths
+//            paths = []
+//            for path in newPaths {
+//                
+//            }
+//            paths = paths.filter({ $0.s <= 134588 })
         }
     }
     

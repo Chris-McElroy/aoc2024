@@ -56,8 +56,8 @@ func d9() {
     
     // part 2 TODO make this faster, i think i can store f2 in a smarter way
     for b in (0...s2.max()!).reversed() {
-        var bi = s2.firstIndex(of: b)!
-        var bc = s2.lastIndex(of: b)! - bi + 1
+        let bi = s2.firstIndex(of: b)!
+        let bc = s2.lastIndex(of: b)! - bi + 1
         print(b, bi, bc)
 //        print(s2)
 //        print(f2)
