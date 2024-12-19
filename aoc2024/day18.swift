@@ -58,7 +58,7 @@ func d18() {
     
 //    let paths = traverse(map: parse, from: P(0, 0), to: P(70, 70), nWays: 1)
     
-//    a = p
+//    a = pdi
     
     printAnswer(p, test: nil, real: nil)
     copy(p.map { S($0) }.joined(separator: ","))

@@ -1781,14 +1781,16 @@ func bfs<T>(startingWith start: Set<T>, searchFor solution: ((T, Int, Set<T>) ->
     var steps = 0
     var found: Set<T> = []
     var current: Set<T> = start
+    // TODO store the number of ways that it could be each way and just store that
     
     w: while shouldContinue(steps, found) && !current.isEmpty {
+        print(found.count, current.count)
         steps += 1
         var next: Set<T> = []
         
         for a in current {
             for b in search(a) {
-                if solution(b, steps, found) { break w }
+                if solution(b, steps, found) { break }
                 
                 if found.insert(b).inserted {
                     next.insert(b)
